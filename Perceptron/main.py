@@ -1,11 +1,8 @@
 import numpy as np
 from timeit import default_timer as timer
-from utils import parse_data, one_hot_encode
-'''
-785 inputs
-10 perceptrons
-1 output
-'''
+from utils import parse_data
+from matplotlib import pyplot as plt
+
 img_size = 784
 
 def main():
@@ -52,11 +49,13 @@ class Network(object):
             t = 0
         return t
 
-    def train(self, inputs, labels, learning_rate = 0.1, nb_epoch=50):
-        for epoch in range(nb_epoch):
+    def train(self, inputs, labels, learning_rate = 0.01, nb_epoch=10):
+        tr_acc_data = []
+        ts_acc_data = []
+        for epoch in range(nb_epoch+1):
             start = timer()
             incorrect = 0
-            acc = 0
+
             for input, label in zip(inputs, labels):
                 max = {"output": 0, "index": 0}
                 prediction = 0
@@ -67,25 +66,36 @@ class Network(object):
                     s = self.dot_product(p, input)
                     y = self.output(s)
                     t = self.target(idx, label)
-                    # Adjust weights ie. stochastic gradient
-                    for i in range(p.weights.size):
-                        p.weights[i] += learning_rate * (t-y) * input[i]
-                    '''
-                    for x in input:
-                        p.weights[0:] += learning_rate * (y - t) * x
-                    '''
-                    # Predict output.
+
+                    # Predict output
                     if s > max["output"]:
                         max["output"] = s
                         max["index"] = idx
+
+                    # Adjust weights ie. stochastic gradient (After 0th epoch)
+                    if epoch > 0:
+                        for i in range(p.weights.size):
+                            p.weights[i] += learning_rate * (t - y) * input[i]
+
                 prediction = max["index"]
                 # Was the prediction correct?
                 if prediction != label:
                     incorrect += 1
+
             end = timer()
             print("Time elasped: {}".format(end - start))
             acc = ((labels.size - incorrect) / labels.size) * 100
-            print("Epoch {}, # of incorrects: {} accuracy: {}".format(epoch, incorrect, acc))
+            tr_acc_data.append(acc)
+            print("Epoch {}: # of incorrects: {}, labels size: {} accuracy: {}".format(epoch, incorrect, labels.size,  acc))
+
+        epoch_data = range(nb_epoch+1)
+        plt.plot(epoch_data, tr_acc_data, label = "Training")
+        plt.xlabel("Epoch")
+        plt.ylabel("Accuracy %")
+        plt.legend()
+        plt.show()
+
+
 
 if __name__ == '__main__':
     main()
