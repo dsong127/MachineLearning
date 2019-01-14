@@ -6,8 +6,8 @@ def parse_data():
     train_data = pd.read_csv("data/mnist_train.csv", header=None, sep=",")
     test_data = pd.read_csv("data/mnist_test.csv", header=None, sep=",")
 
-    #train_data = shuffle(train_data)
-    #test_data = shuffle(test_data)
+    train_data = shuffle(train_data)
+    test_data = shuffle(test_data)
 
     tr_labels = train_data.iloc[:, 0]
     train_data /= 255

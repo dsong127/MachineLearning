@@ -11,17 +11,22 @@ img_size = 784
 def main():
     tr_features, tr_labels, ts_features, ts_labels = parse_data()
 
+    #one_hot_encode(tr_labels)
+    #one_hot_encode(ts_labels)
+
     network = Network(10)
     network.Perceptron(img_size)
-    network.train(tr_features, tr_labels)
+    network.train(ts_features, ts_labels)
 
 class Network(object):
     class Perceptron(object):
         def __init__(self, input_size):
-            self.weights = np.random.uniform(low=-0.05, high=0.05, size=(input_size + 1))
+            self.weights = self.init_weights(input_size)
 
-        #def adjust_weights(self, delta):
-        #    self.weights = delta
+        def init_weights(self, input_size):
+            w = np.random.uniform(low=-0.05, high=0.05, size=(input_size+1))
+            w = np.around(w, decimals = 2)
+            return w
 
     def __init__(self, nb_perceptrons):
         self.nb_perceptrons = nb_perceptrons
@@ -47,12 +52,11 @@ class Network(object):
             t = 0
         return t
 
-    def train(self, inputs, labels, learning_rate = 1, nb_epoch=50):
+    def train(self, inputs, labels, learning_rate = 0.1, nb_epoch=50):
         for epoch in range(nb_epoch):
             start = timer()
             incorrect = 0
             acc = 0
-            start = timer()
             for input, label in zip(inputs, labels):
                 max = {"output": 0, "index": 0}
                 prediction = 0
@@ -64,14 +68,16 @@ class Network(object):
                     y = self.output(s)
                     t = self.target(idx, label)
                     # Adjust weights ie. stochastic gradient
+                    for i in range(p.weights.size):
+                        p.weights[i] += learning_rate * (t-y) * input[i]
+                    '''
                     for x in input:
-                        p.weights[0:] += learning_rate * (y-t) * x
+                        p.weights[0:] += learning_rate * (y - t) * x
+                    '''
                     # Predict output.
-                    # Find perceptron with highest dot product
                     if s > max["output"]:
                         max["output"] = s
                         max["index"] = idx
-
                 prediction = max["index"]
                 # Was the prediction correct?
                 if prediction != label:
