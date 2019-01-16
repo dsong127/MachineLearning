@@ -2,18 +2,16 @@ import numpy as np
 from timeit import default_timer as timer
 from utils import parse_data
 from matplotlib import pyplot as plt
+from sklearn.metrics import confusion_matrix
 
 img_size = 784
 
 def main():
     tr_features, tr_labels, ts_features, ts_labels = parse_data()
 
-    #one_hot_encode(tr_labels)
-    #one_hot_encode(ts_labels)
-
     network = Network(10)
     network.Perceptron(img_size)
-    network.train(ts_features, ts_labels)
+    network.train(tr_features, tr_labels, ts_features, ts_labels)
 
 class Network(object):
     class Perceptron(object):
@@ -49,18 +47,20 @@ class Network(object):
             t = 0
         return t
 
-    def train(self, inputs, labels, learning_rate = 0.01, nb_epoch=10):
+    def train(self, inputs, labels, ts_inputs, ts_labels, learning_rate = 0.1, nb_epoch=50):
         tr_acc_data = []
         ts_acc_data = []
+        prediction_data = []
         for epoch in range(nb_epoch+1):
             start = timer()
-            incorrect = 0
+            tr_incorrect =0
+            ts_incorrect = 0
 
             for input, label in zip(inputs, labels):
-                max = {"output": 0, "index": 0}
-                prediction = 0
+                tr_max = {"output": 0, "index": 0}
+                tr_prediction = 0
                 # 1. For each training example, loop through all 10 perceptrons to compute wx, y, t
-                # 2. Predict by finding the perceptron with max wx, and storing its class (Number)
+                # 2. Predict by finding the perceptron with max wx, and storing its class (Index)
 
                 for idx, p in enumerate(self.perceptrons):
                     s = self.dot_product(p, input)
@@ -68,34 +68,60 @@ class Network(object):
                     t = self.target(idx, label)
 
                     # Predict output
-                    if s > max["output"]:
-                        max["output"] = s
-                        max["index"] = idx
-
+                    if s > tr_max["output"]:
+                        tr_max["output"] = s
+                        tr_max["index"] = idx
                     # Adjust weights ie. stochastic gradient (After 0th epoch)
                     if epoch > 0:
-                        for i in range(p.weights.size):
+                       for i in range(p.weights.size):
                             p.weights[i] += learning_rate * (t - y) * input[i]
-
-                prediction = max["index"]
+                tr_prediction = tr_max["index"]
                 # Was the prediction correct?
-                if prediction != label:
-                    incorrect += 1
+                if tr_prediction != label:
+                    tr_incorrect += 1
 
             end = timer()
+            tr_acc = ((labels.size - tr_incorrect) / labels.size) * 100
+            tr_acc_data.append(tr_acc)
             print("Time elasped: {}".format(end - start))
-            acc = ((labels.size - incorrect) / labels.size) * 100
-            tr_acc_data.append(acc)
-            print("Epoch {}: # of incorrects: {}, labels size: {} accuracy: {}".format(epoch, incorrect, labels.size,  acc))
+            print("Epoch {}: # of incorrects: {}, labels size: {} accuracy: {}".format(epoch, tr_incorrect, labels.size,  tr_acc))
 
+            # Calculate accuracy on test set
+            start = timer()
+            for ts_input, ts_label in zip(ts_inputs, ts_labels):
+                ts_max = {"output": 0, "index": 0}
+                ts_prediction = 0
+                for idx, p in enumerate(self.perceptrons):
+                    s = self.dot_product(p, ts_input)
+                    y = self.output(s)
+                    t = self.target(idx, ts_label)
+                    if s > ts_max["output"]:
+                        ts_max["output"] = s
+                        ts_max["index"] = idx
+                ts_prediction = ts_max["index"]
+                if epoch == nb_epoch:
+                    prediction_data.append(ts_prediction)
+                # Was the prediction correct?
+                if ts_prediction != ts_label:
+                    ts_incorrect += 1
+
+            end = timer()
+            ts_acc = ((ts_labels.size - ts_incorrect) / ts_labels.size) * 100
+            ts_acc_data.append(ts_acc)
+            print("Time elasped: {}".format(end - start))
+            print("Epoch {} (Test set): # of incorrects: {}, labels size: {} accuracy: {}".format(epoch, ts_incorrect, ts_labels.size, ts_acc))
+
+        # Confusion matrix and plots
+        cm = confusion_matrix(ts_labels, np.array(prediction_data))
+        print(cm)
         epoch_data = range(nb_epoch+1)
+        plt.title("Accuracy for learning rate: {}".format(learning_rate))
         plt.plot(epoch_data, tr_acc_data, label = "Training")
+        plt.plot(epoch_data, ts_acc_data, label="Testing")
         plt.xlabel("Epoch")
         plt.ylabel("Accuracy %")
         plt.legend()
         plt.show()
-
-
 
 if __name__ == '__main__':
     main()
