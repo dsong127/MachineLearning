@@ -1,8 +1,9 @@
 import numpy as np
+import pandas as pd
 from timeit import default_timer as timer
-from utils import parse_data
 from matplotlib import pyplot as plt
 from sklearn.metrics import confusion_matrix
+from sklearn.utils import shuffle
 
 img_size = 784
 
@@ -12,6 +13,33 @@ def main():
     network = Network(10)
     network.Perceptron(img_size)
     network.train(tr_features, tr_labels, ts_features, ts_labels)
+
+def parse_data():
+    '''
+    Input datas are extracted from csv files and scaled by 255.
+    First column is stored in labels variable, then replaced by a column of 1's (Bias)
+    :return: Preprocessed inputs and labels
+    '''
+    train_data = pd.read_csv("data/mnist_train.csv", header=None, sep=",")
+    test_data = pd.read_csv("data/mnist_test.csv", header=None, sep=",")
+
+    train_data = shuffle(train_data)
+    test_data = shuffle(test_data)
+
+    tr_labels = train_data.iloc[:, 0]
+    train_data /= 255
+    train_data.iloc[:,0] = 1.0
+    tr_features = train_data
+
+    ts_labels = test_data.iloc[:, 0]
+    test_data /= 255
+    test_data.iloc[:,0] = 1.0
+    ts_features = test_data
+
+    tr_labels = np.array(tr_labels).reshape(60000, 1)
+    ts_labels = np.array(ts_labels).reshape(10000, 1)
+
+    return np.array(tr_features), tr_labels, np.array(ts_features), ts_labels
 
 class Network(object):
     class Perceptron(object):
@@ -47,7 +75,7 @@ class Network(object):
             t = 0
         return t
 
-    def train(self, inputs, labels, ts_inputs, ts_labels, learning_rate = 0.1, nb_epoch=50):
+    def train(self, inputs, labels, ts_inputs, ts_labels, learning_rate = 1, nb_epoch=50):
         tr_acc_data = []
         ts_acc_data = []
         prediction_data = []
@@ -59,8 +87,10 @@ class Network(object):
             for input, label in zip(inputs, labels):
                 tr_max = {"output": 0, "index": 0}
                 tr_prediction = 0
+
                 # 1. For each training example, loop through all 10 perceptrons to compute wx, y, t
                 # 2. Predict by finding the perceptron with max wx, and storing its class (Index)
+                # Note: Following for loop can be replaced by performing dot product of each input row with weights of all perceptrons
 
                 for idx, p in enumerate(self.perceptrons):
                     s = self.dot_product(p, input)
