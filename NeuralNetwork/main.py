@@ -11,7 +11,9 @@ img_size = 784
 #h_size = 20
 h_size = 100
 #############################
-m = 60000
+#m = 60000
+#m = 30000
+m = 15000
 ts_m = 10000
 
 def main():
@@ -20,13 +22,15 @@ def main():
     tr_features, tr_labels, ts_features, ts_labels_cm = parse_data()
     ts_labels = one_hot_encode(ts_labels_cm)
     tr_labels = one_hot_encode(tr_labels)
+    print("Training input shape: {}".format(tr_features.shape))
+    print("Training labels shape: {}".format(tr_labels.shape))
     end = timer()
     print("Parse data complete. Time taken: {} seconds".format(end-start))
     print("------------------------------------------")
 
     network_10 = Network(img_size,h_size,10)
 
-    network_10.train(0.1, 1, tr_features, tr_labels, ts_features, ts_labels, ts_labels_cm, 50)
+    #network_10.train(0.1, 0.9, tr_features, tr_labels, ts_features, ts_labels, ts_labels_cm, 50)
 
 class Network(object):
     def __init__(self, input_size, hidden_size, output_size):
@@ -192,9 +196,12 @@ def parse_data():
     test_data = pd.read_csv('data/mnist_test.csv', header=None, sep=',', engine='c', na_filter=False, low_memory=False)
 
     tr_labels = train_data.iloc[:, 0]
+    tr_labels = tr_labels[:15000]
+    print(tr_labels.value_counts())    # Check dataset is balanced
     train_data /= 255
     train_data.iloc[:,0] = 1.0
-    tr_features = train_data
+    #tr_features = train_data
+    tr_features = train_data[:15000]    #Only use half of training set
 
     ts_labels = test_data.iloc[:, 0]
     test_data /= 255
