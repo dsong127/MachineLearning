@@ -3,7 +3,7 @@ import pandas as pd
 from matplotlib import pyplot as plt
 from sklearn import svm
 from sklearn import preprocessing
-from sklearn.metrics import accuracy_score, precision_score, recall_score, roc_curve
+from sklearn.metrics import accuracy_score, precision_score, recall_score, roc_curve, auc
 import random
 import warnings
 warnings.filterwarnings("ignore")
@@ -32,14 +32,16 @@ def main():
 
     probs = probs[:,1]
     fpr, tpr, thresh = roc_curve(ts_y, probs)
+    roc_auc = auc(fpr, tpr)
 
     print("Accuracy: {} %".format(acc))
     print("Precision: {} %".format(precision))
     print("Recall: {} %".format(recall))
 
     # Plot ROC Curve and save plot
-    plt.title('Receiver Operating Characteristic')
-    plt.plot(fpr, tpr)
+    plt.title('ROC Curve')
+    plt.plot(fpr, tpr, label='AUC = %0.2f' % roc_auc)
+    plt.legend(loc='lower right')
     plt.plot([0, 1], [0, 1], linestyle='--')
     plt.xlim([0, 1])
     plt.ylim([0, 1])

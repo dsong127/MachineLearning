@@ -1,6 +1,11 @@
 # PyCharm folder
 .idea/
 
+*.png
+/NaiveBayes/*.png
+/NaiveBayes/*.data
+/NaiveBayes/*.DOCUMENTATION
+/NaiveBayes/*.names
 data/
 
 # csv file

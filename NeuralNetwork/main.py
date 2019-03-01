@@ -30,7 +30,7 @@ def main():
 
     network_10 = Network(img_size,h_size,10)
 
-    #network_10.train(0.1, 0.9, tr_features, tr_labels, ts_features, ts_labels, ts_labels_cm, 50)
+    network_10.train(0.1, 0.9, tr_features, tr_labels, ts_features, ts_labels, ts_labels_cm, 50)
 
 class Network(object):
     def __init__(self, input_size, hidden_size, output_size):
