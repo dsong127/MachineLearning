@@ -1,6 +1,6 @@
 # PyCharm folder
 .idea/
-
+.AI/
 *.png
 /NaiveBayes/*.png
 /NaiveBayes/*.data

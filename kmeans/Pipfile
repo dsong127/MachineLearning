@@ -10,6 +10,9 @@ numpy = "*"
 pandas = "*"
 matplotlib = "*"
 scikit-learn = "*"
+seaborn = "*"
+scipy = "*"
+pillow = "*"
 
 [requires]
 python_version = "3.6"
