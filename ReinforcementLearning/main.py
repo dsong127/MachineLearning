@@ -2,7 +2,6 @@ import numpy as np
 from random import randint
 from copy import deepcopy
 from matplotlib import pyplot as plt
-#np.set_printoptions(threshold=np.inf)
 
 discount_rate = 0.9
 learning_rate = 0.2
@@ -64,10 +63,7 @@ class Robot():
             action = randint(0, 4) # Some action
         else:
             action = np.argmax(Q_table[q_row, :])
-        '''
-        print("Grid before move:")
-        print(grid)
-        '''
+
         reward = 0
 
         # Pick up
@@ -106,35 +102,16 @@ class Robot():
 
         self.current_nb_moves += 1
         self.points += reward
-        '''
-        print("New location: {}".format(self.location))
-        print("Points after action {}: {}".format(int(action), self.points))
-        print("Grid after move:")
-        print(grid)
-        print('---------------------------------------------------------------')
-        '''
+       
         return prev_state, reward, action
 
     def update_q(self, p_state, p_action, reward):
-        #print('previous state: {}'.format(p_state))
         p_row = ter_to_dec(p_state)
         current_row = ter_to_dec(self.current_state)
-        #print('prow: {}'.format(p_row))
-        #print("current row: {}".format(current_row))
-
         predict_best = np.max(Q_table[current_row, :])
         p_q = Q_table[p_row, p_action]
-        '''
-        print('---------------------------------------------------------------')
-        print('reward {}'.format(reward))
-        print('predict best {}'.format(predict_best))
-        print('p_q {}'.format(p_q))
-        print('---------------------------------------------------------------')
-        '''
-
+        
         Q_table[p_row, p_action] += learning_rate * (float(reward) + discount_rate * predict_best - float(p_q))
-        #print(Q_table[p_row])
-        #print(Q_table[current_row])
         return
 
 
@@ -179,7 +156,6 @@ def train():
         while rob.current_nb_moves <= 200:
             prev_state, reward, action = rob.choose_perform_action(world.grid)
             rob.perceive_current_state(world.grid)
-            #print('New state: {}'.format(rob.current_state))
             rob.update_q(prev_state, action, reward)
         # Decrease epsilon every 50 epoch
         if (i + 1) % 50 == 0 and epsilon > 0.1:
