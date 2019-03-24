@@ -8,8 +8,9 @@ from sklearn.utils import shuffle
 img_size = 784
 
 def main():
+    print('Loading data...')
     tr_features, tr_labels, ts_features, ts_labels = parse_data()
-
+    print('Data loaded')
     network = Network(10)
     network.Perceptron(img_size)
     network.train(tr_features, tr_labels, ts_features, ts_labels)
@@ -80,6 +81,7 @@ class Network(object):
         ts_acc_data = []
         prediction_data = []
         for epoch in range(nb_epoch+1):
+            print('Epoch: {}'.format(epoch))
             start = timer()
             tr_incorrect =0
             ts_incorrect = 0
