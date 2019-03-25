@@ -16,11 +16,6 @@ def main():
     network.train(tr_features, tr_labels, ts_features, ts_labels)
 
 def parse_data():
-    '''
-    Input datas are extracted from csv files and scaled by 255.
-    First column is stored in labels variable, then replaced by a column of 1's (Bias)
-    :return: Preprocessed inputs and labels
-    '''
     train_data = pd.read_csv("data/mnist_train.csv", header=None, sep=",")
     test_data = pd.read_csv("data/mnist_test.csv", header=None, sep=",")
 

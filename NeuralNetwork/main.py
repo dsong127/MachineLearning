@@ -6,13 +6,8 @@ import seaborn as sn
 from timeit import default_timer as timer
 
 img_size = 784
-####### For experiment 1#######
-#h_size = 10
-#h_size = 20
 h_size = 100
-#############################
-#m = 60000
-#m = 30000
+
 m = 15000
 ts_m = 10000
 
@@ -83,35 +78,18 @@ class Network(object):
         assert(Eo.shape == ((1,10)))
 
         # Compute hidden error terms
-        #print("H->O weights shape {}".format(self.hidden_out_weights[1:].shape))
-        #print("Eo.T shape: {}".format(Eo.T.shape))
-
         dot = np.dot(self.hidden_out_weights[1:], Eo.T)
-        #print("Dot shape {}".format(dot.shape))
-
+    
         sig_prime = (H[1:] * (1 - H[1:]))
         sig_prime = sig_prime.reshape((h_size,1))
-        #print("sig_prime shape: {}".format(sig_prime.shape))
-
+        
         Eh = sig_prime.T * dot.T
-
-        #print("Eh SHAPE: {}".format(Eh.shape))
-        #print("--------------------")
 
         return Eo, Eh
 
     def update_weights(self, Eo, Eh, H, X, learning_rate, momentum):
         #Compute delta, update weights, save current delta for next iteration
-        # Update Hidden to output
-        '''
-        first = (learning_rate * Eo.T * H).T
-        print("First shape: {}".format(first.shape))
-        second = (momentum * self.prev_w_ho)
-        print("Scond shape: {}".format(second.shape))
-        print("---------------------")
-        '''
         delta_w = (learning_rate * Eo.T * H).T + (momentum * self.prev_w_ho)
-        #print("delta_w shape: {}".format(delta_w.shape))
 
         self.hidden_out_weights += delta_w
         self.prev_w_ho = delta_w
