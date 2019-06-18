@@ -2,7 +2,7 @@
 
 ## Requirements
 
-- Python 3.x
+- Python 3.6
 - [Pipenv 2018.11.26](https://docs.pipenv.org/en/latest/) - For package management and virtual Python environment
 - [Numpy 1.16](https://www.numpy.org/) - For easy data array manipulation
 - [Pandas](https://pandas.pydata.org/) - For loading and data manipulation
@@ -14,6 +14,7 @@
 
 cd into cloned directory. Then:
 
+* `pip3 install pipenv`
 * `pipenv install` to install dependencies
 * `pipenv shell`
 * `python main.py`
