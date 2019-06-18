@@ -14,7 +14,7 @@
 
 cd into cloned directory. Then:
 
-* `pip install` to install dependencies
+* `pipenv install` to install dependencies
 * `pipenv shell`
 * `python main.py`
 
