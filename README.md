@@ -10,15 +10,6 @@
 - [Matplotlib](https://matplotlib.org/) - For plotting
 - [Seaborn](https://seaborn.pydata.org/) - For creating confusion matrices
 
-## Instructions
-
-cd into cloned directory. Then:
-
-* `pip3 install pipenv`
-* `pipenv install` to install dependencies
-* `pipenv shell`
-* `python main.py`
-
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details

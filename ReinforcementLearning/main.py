@@ -2,17 +2,20 @@ import numpy as np
 from random import randint
 from copy import deepcopy
 from matplotlib import pyplot as plt
+#import math
 
 discount_rate = 0.9
 learning_rate = 0.2
-nb_episodes = 5000
-nb_moves = 200
-nb_cans = 50
-epsilon = 1
-epsilon_test = 0.1
-
 grid_rows = 10
 grid_cols = 10
+#nb_cans = math.floor((grid_rows*grid_cols) / 2)
+nb_cans = 50
+nb_episodes = 5000
+nb_moves = 200
+
+
+epsilon = 1
+epsilon_test = 0.1
 
 Q_table = np.zeros((243, 5))
 
